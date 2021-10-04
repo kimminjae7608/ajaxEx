@@ -1,0 +1,7 @@
+터미널 창에서 json-server 실행 안될때 , 
+
+powershell 을 관리자 모드로 실행. -> 아래 명령 실행
+
+PS C:\Windows\system32> Set-ExecutionPolicy RemoteSigned
+
+변경하시겠습니까?  y   

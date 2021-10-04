@@ -18,7 +18,7 @@
     + 자원 resource : URI 로 표현한다.URI는 명사로 표현한다.
     + 행위 verb : HTTP 요청 메소드를 이용하여 CRUD 를 구현한다.
     + 표현 repressentations : 데이터이다.
-    + 
+  
 ##### Ajax (Asynchronous Javascript and XML)
 + 자바스크립트를 사용하여 브라우저가 서버에게 비동기 방식으로 데이터를 요청하고 서버가 응답한 데이터를 수신하여 그 데이터에 대한 부분만 웹페이지를 동적으로 갱신하는 프로그래밍 방식이다.
 + 웹페이지 전체를 렌더링 하지 않고 부분적으로 하여 응답 속도와 성능의 효율이 높아진다.
@@ -45,8 +45,8 @@
 ##### XMLHttpRequest 객체
 + 자바스크립트를 사용하여 HTTP 요청을 전송한다.  HTTP 응답 수신을 위한 다양한 메소드와 프로퍼티도 제공한다.
 + 메소드
-    + open : HTTP 요청 초기화
-    + send : HTTP 요청 전송
+    + open :** HTTP 요청 초기화, open(method: string, url: string | URL)
+    + send : **HTTP 요청 전송
     + abort : 전송된 요청 중단
     + setRequestHeader : 특정헤더값 설정
     + getResponseHeader : 특정헤다값 반환
@@ -55,14 +55,14 @@
             UNSENT(open메소드 호출이전):0 , OPENED(이후) : 1, 
             HEADERS_RECEIVED(send메소드 호출 이후):2, 
             LOADING(서버 응답중):3, DONE(서버응답완료):4
-    + status : HTTP 요청에 대한 응답 상태. 예:200   https://developer.mozilla.org/ko/docs/Web/HTTP/Status/
+    + status :** HTTP 요청에 대한 응답 상태. 예:200   https://developer.mozilla.org/ko/docs/Web/HTTP/Status/
     + statusText : HTTP 요청에 대한 응답 메시지. 예:OK    
     + responseType : document, json, text,blob, arraybuffer
-    + response : HTTP 요청에 대한 응답 몸체
+    + response : HTTP 요청에 대한 응답 몸체(데이터)
     + responseText : 서버가 전송한 HTTP요청에 대한 응답 문자열
 + 이벤트 핸들러 프로퍼티
     + onreadystatechange : readystate 값이 변경되었을때
-    + onload : 요청이 성공적으로 완료되었을 때
+    + onload : **요청이 성공적으로 완료되었을 때
 
 ##### HTTP 요청 전송
     1. open 메소드로 요청을 초기화한다.
@@ -70,7 +70,7 @@
     3. send 메소드로 요청을 전송한다.
 
 ##### HTTP 요청 메소드
-    + GET : index/retrieve(모든 특정리소스 반환),페이로드 X
+    + GET : index/retrieve(모든 특정리소스 반환)
         + 데이터를 URL 일부분 즉 쿼리 문자열로 서버에 전송한다.
     + POST : create (리소스 생성)
         + 데이터(페이로드)를 요청 몸체 request body 에 담아 전송한다.
