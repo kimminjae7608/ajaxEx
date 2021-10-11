@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        td,
+        th {
+            border-top: 1px solid gray;
+            border-bottom: 1px solid gray;
+            padding: 5px 10px;
+
+        }
+
+        th {
+            background-color: teal;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: darkseagreen;
+            color: white;
+            cursor: pointer;
+        }
+
+        tr>td:nth-child(1) {
+            width: 15%;
+        }
+
+        tr>td:nth-child(2) {
+            width: 30%;
+        }
+
+        tr>td:nth-child(3) {
+            width: 15%;
+        }
+
+        tr>td:nth-child(4) {
+            width: 40%;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="get">GET</button>
+    <button id="getone">GET ONE</button>
+    <button id="post">POST</button>
+    <button id="put">PUT</button>
+    <button id="patch">PATCH</button>
+    <button id="delete">DELETE</button><br>
+    <input type="text" placeholder="id 번호를 입력하세요." id='id_'><br>
+    <input type="text" placeholder="이름을 입력하세요." id='name'><br>
+    <input type="text" placeholder="나이를 입력하세요." id='age'><br>
+    <input type="text" placeholder="취미를 입력하세요." id='hobbies'><br>
+    <legend id='hobby'>
+        <input type="checkbox" class="hobby" value="축구" id="football"><label for="football">축구</label>
+        <input type="checkbox" class="hobby" value="달리기" id="running"><label for="running">달리기</label>
+        <input type="checkbox" class="hobby" value="노래" id="singing"><label for="singing">노래</label>
+        <input type="checkbox" class="hobby" value="읽기" id="reading"><label for="reading">읽기</label>
+    </legend>
+    <table id="list" style="width: 60%;border-collapse: collapse;">
+
+
+    </table>
+    <pre>
+
+    </pre>
+
+
+    <script>
+        //페이지 요청이 오면 바로 List 요청해서  응답받은 내용으로 화면에 띄우기 
+        makeList();
+
+        //GET 버튼
+        document.querySelector('#get').addEventListener('click', function () {
+            makeList(); //함수 호출
+        });
+
+
+        function makeList() {
+
+            document.querySelectorAll('#list > tr').forEach(item => {
+                item.remove();
+            });
+
+            const xhr = new XMLHttpRequest();
+
+            xhr.open('GET', '/customer'); //3번째 인자 async 는 비동기여부.기본값 true
+            xhr.send();
+
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    document.querySelector('pre').textContent = xhr.response;
+                    const list = JSON.parse(xhr.response);
+                    const $title = document.createElement("tr");
+                    $title.innerHTML = `
+                            <th>번호</th>
+                            <th>이름</th>
+                            <th>나이</th>
+                            <th>취미</th>
+                            `;
+                    document.getElementById('list').appendChild($title);
+                    list.forEach(function (customer) {
+                        const $tr = document.createElement("tr");
+                        const $temp = `<td>${customer.id}</td>
+                                            <td>${customer.name}</td>
+                                            <td>${customer.age}</td>
+                                            <td>${customer.hobby}</td>
+                                `;
+                        $tr.innerHTML = $temp;
+                        document.getElementById('list').appendChild($tr);
+                        $tr.onclick = forwardOne;    //tr태그에 onclick 이벤트 핸들러 함수 설정합니다. 아래에 함수 정의 참고
+                    });
+                } else {
+                    console.error('Error', xhr.status, xhr.statusText);
+                }
+            };
+        }
+
+        //각 행을 클릭했을 때 이벤트 핸들러 - 값을 input 요소로 전달하는 함수
+        function forwardOne(e) {                    //onclick 이벤트 핸들러 함수는 이벤트가 발생한 객체를 인자로 받습니다.(기본 동작)
+            const $tr = e.srcElement.parentElement;          //클릭 한 테이블 행의 id값(번호) td 태그 
+            
+            document.getElementById('id_').value = $tr.querySelector('td:nth-child(1)').innerHTML;
+            document.getElementById('name').value = $tr.querySelector('td:nth-child(2)').innerHTML;
+            document.getElementById('age').value = $tr.querySelector('td:nth-child(3)').innerHTML;
+            const hobbies = $tr.querySelector('td:nth-child(4)').innerHTML;
+            document.getElementById('hobbies').value =   hobbies;
+                    document.querySelectorAll('.hobby').forEach(item => {          
+                        if ( hobbies.includes(item.value))
+                            item.checked = true;
+                        else
+                            item.checked = false;
+                    });
+        }
+
+
+        //GET ONE 버튼
+        document.querySelector('#getone').addEventListener('click', function () {
+
+            const xhr = new XMLHttpRequest();
+            const id = document.querySelector('#id_').value;
+            console.log(id);
+            //    xhr.open('GET','/customer/1');  //3번째 인자 async 는 비동기여부.기본값 true
+            xhr.open('GET', `/customer/${id}`); //3번째 인자 async 는 비동기여부.기본값 true
+            xhr.send();
+
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    document.querySelector('pre').innerHTML = xhr.response;
+                    const customer = JSON.parse(xhr.response);
+                    document.getElementById('name').value = customer.name;
+                    document.getElementById('age').value = customer.age;
+                    document.getElementById('hobbies').value = customer.hobby;
+                    document.querySelectorAll('.hobby').forEach(item => {
+                                 //customer.hobby 에 있는 텍스트가 체크박스 요소의 value 를 포함하고 있는지 각각 비교함.
+                        if (customer.hobby.includes(item.value))
+                            item.checked = true;
+                        else
+                            item.checked = false;    
+                    });
+                } else {
+                    console.error('Error', xhr.status, xhr.statusText);
+                }
+            };
+        });
+
+        //체크 박스 클릭하면 체크 된것 문자열 연결
+        document.querySelector('#hobby').addEventListener('click', function () {
+            let hobbies = String();
+            document.querySelectorAll('.hobby').forEach(item => {
+                if (item.checked) hobbies = hobbies.concat(item.value, ",");
+            });
+            document.querySelector('#hobbies').value = hobbies.substr(0, hobbies.length - 1);
+        });
+
+        //POST
+        document.querySelector('#post').addEventListener('click', function () {
+
+            const id = document.querySelector('#id_').value;
+            const name = document.querySelector('#name').value;
+            const age = document.querySelector('#age').value;
+            const hobbies = document.querySelector('#hobbies').value;
+
+
+            const xhr = new XMLHttpRequest();
+
+            xhr.open('POST', '/customer');
+            //request body(요청 몸체)에 담아 서버로 전송할 페이로드의 MIME 타입을 지정.
+            xhr.setRequestHeader('content-type', 'application/json');
+            xhr.send(JSON.stringify({
+                "id": id,
+                "name": name,
+                "age": `${age}`,
+                "hobby": [`${hobbies}`]
+            }));
+            xhr.onload = () => { // 201:created
+                if (xhr.status === 200 || xhr.status === 201) {
+                    document.querySelector('pre').innerHTML = xhr.response;
+                    makeList();             //리스트 변경하기 
+                } else {
+                    console.error('Error', xhr.status, xhr.statusText);
+                }
+            };
+        });
+
+        //PUT
+        document.querySelector('#put').addEventListener('click', function () {
+            const xhr = new XMLHttpRequest();
+
+            xhr.open('PUT', '/customer/4');
+            //request body(요청 몸체)에 담아 서버로 전송할 페이로드의 MIME 타입을 지정.
+            xhr.setRequestHeader('content-type', 'application/json');
+            xhr.send(JSON.stringify({
+                "id": 4,
+                "name": "nahyeon",
+                "age": 23,
+                "hobby": ["노래", "수영"]
+            }));
+            xhr.onload = () => { // 201:created
+                if (xhr.status === 200) {
+                    document.querySelector('pre').innerHTML = xhr.response;
+                } else {
+                    console.error('Error', xhr.status, xhr.statusText);
+                }
+            };
+        });
+
+        //PATCH
+        document.querySelector('#patch').addEventListener('click', function () {
+            const xhr = new XMLHttpRequest();
+
+            xhr.open('PATCH', '/customer/2');
+            //request body(요청 몸체)에 담아 서버로 전송할 페이로드의 MIME 타입을 지정.
+            xhr.setRequestHeader('content-type', 'application/json');
+            xhr.send(JSON.stringify({
+                "age": 22
+            }));
+            xhr.onload = () => { // 201:created
+                if (xhr.status === 200) {
+                    document.querySelector('pre').innerHTML = xhr.response;
+                } else {
+                    console.error('Error', xhr.status, xhr.statusText);
+                }
+            };
+        });
+
+        //DELETE
+        document.querySelector('#delete').addEventListener('click', function () {
+            const xhr = new XMLHttpRequest();
+            const id = document.querySelector('#id_').value;
+            xhr.open('DELETE', `/customer/${id}`);
+            //request body(요청 몸체)에 담아 서버로 전송할 페이로드의 MIME 타입을 지정.
+            xhr.send();
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    document.querySelector('pre').innerHTML = xhr.response;
+                } else {
+                    console.error('Error', xhr.status, xhr.statusText);
+                }
+            };
+        });
+
+        //확인 304,201코드
+
+        /*         xhr.open('PUT','/users');
+                xhr.setRequestHeader('content-type','application/json');
+                xhr.send(JSON.stringify({name:'nayeon',age:25,hobby:'수영,노래'}));
+         */
+    </script>
+</body>
+
+</html>

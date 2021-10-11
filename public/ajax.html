@@ -57,7 +57,7 @@
         <input type="checkbox" class="hobby" value="읽기" id="reading"><label for="reading">읽기</label>
     </legend>
     <table id="list" style="width: 60%;border-collapse: collapse;">
-       
+
 
     </table>
     <pre></pre>
@@ -76,7 +76,16 @@
                           document.querySelector('pre').innerHTML=xhr.response;
                       
                           const list = JSON.parse(xhr.response);    //json문자열 -> js object 로 변환
-                          const $title = document.createElement("tr");
+                          makeList(list);
+                    }else {
+                        console.error('Error',xhr.status,xhr.statusText);
+                    }
+            };
+        });
+
+        function makeList(list){
+            document.getElementById('list').
+            const $title = document.createElement("tr");
                             $title.innerHTML=`
                                 <th>번호</th>
                                 <th>이름</th>
@@ -95,11 +104,8 @@
                             $tr.innerHTML=$temp;
                             document.getElementById('list').appendChild($tr);
                         });
-                    }else {
-                        console.error('Error',xhr.status,xhr.statusText);
-                    }
-            };
-        });
+        }
+
 
         document.querySelector("#getOne").addEventListener('click',function(){
             const xhr = new XMLHttpRequest();
@@ -132,6 +138,7 @@
         xhr.onload=()=>{   // 201:created
             if(xhr.status==200 || xhr.status==201) {
                 document.querySelector('pre').innerHTML=xhr.response;
+
             }else{
                 console.error('Error',xhr.status,xhr.statusText);
             }
